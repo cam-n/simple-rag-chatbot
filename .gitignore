@@ -1,0 +1,13 @@
+# private documents (keep the folder, ignore its contents)
+documents/*
+!documents/.gitkeep
+
+# python
+__pycache__/
+*.pyc
+.venv/
+
+# local data and secrets
+faiss_index/
+.env
+.DS_Store

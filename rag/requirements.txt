@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+langchain-community
+langchain-core
+langchain-text-splitters
+langchain-ollama
+faiss-cpu
+docx2txt

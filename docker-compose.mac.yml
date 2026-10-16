@@ -1,0 +1,63 @@
+# Everything in Docker (Mac): ollama (official image) + rag API + UI.
+# NOTE: Docker on macOS cannot use the Apple GPU, so Ollama runs on CPU (slow).
+# Give Docker Desktop >= 8 GB RAM (Settings > Resources).
+#
+# Run:  docker compose -f docker-compose.mac.yml up --build
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    environment:
+      LLM_MODEL: llama3.1:8b
+      EMBED_MODEL: nomic-embed-text
+    # Start the server, then pull both models on first run
+    entrypoint: ["/bin/bash", "/entrypoint.sh"]
+    volumes:
+      - ./ollama/entrypoint.sh:/entrypoint.sh:ro
+      - ollama_data:/root/.ollama
+    # Uncomment to reach Ollama from your Mac (stop the native app first, port clash):
+    # ports:
+    #   - "11434:11434"
+    healthcheck:
+      # healthy only once both models are pulled
+      test: ["CMD-SHELL", "ollama list | grep -q \"$$EMBED_MODEL\" && ollama list | grep -q \"$$LLM_MODEL\""]
+      interval: 10s
+      timeout: 10s
+      retries: 90
+      start_period: 30s
+
+  rag:
+    build: ./rag
+    image: rag-api
+    environment:
+      OLLAMA_BASE_URL: http://ollama:11434
+      LLM_MODEL: llama3.1:8b
+      EMBED_MODEL: nomic-embed-text
+      DOCS_PATH: /data/documents
+      INDEX_PATH: /data/faiss_index
+    volumes:
+      - ./documents:/data/documents:ro
+      - rag_index:/data/faiss_index
+    depends_on:
+      ollama:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  ui:
+    build: ./ui
+    image: rag-ui
+    environment:
+      API_URL: http://rag:8000
+    ports:
+      - "8501:8501"
+    depends_on:
+      rag:
+        condition: service_healthy
+
+volumes:
+  ollama_data:
+  rag_index:

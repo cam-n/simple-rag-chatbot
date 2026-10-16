@@ -1,0 +1,59 @@
+services:
+  ollama:
+    build: ./ollama
+    image: rag-ollama
+    environment:
+      LLM_MODEL: llama3.1:8b
+      EMBED_MODEL: nomic-embed-text
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      # healthy only after both models have been pulled
+      test: ["CMD-SHELL", "ollama list | grep -q \"$$EMBED_MODEL\" && ollama list | grep -q \"$$LLM_MODEL\""]
+      interval: 10s
+      timeout: 10s
+      retries: 60
+      start_period: 30s
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+  rag:
+    build: ./rag
+    image: rag-api
+    environment:
+      OLLAMA_BASE_URL: http://ollama:11434
+      LLM_MODEL: llama3.1:8b
+      EMBED_MODEL: nomic-embed-text
+      DOCS_PATH: /data/documents
+      INDEX_PATH: /data/faiss_index
+    volumes:
+      - ./documents:/data/documents:ro
+      - rag_index:/data/faiss_index
+    depends_on:
+      ollama:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  ui:
+    build: ./ui
+    image: rag-ui
+    environment:
+      API_URL: http://rag:8000
+    ports:
+      - "8501:8501"
+    depends_on:
+      rag:
+        condition: service_healthy
+
+volumes:
+  ollama_data:
+  rag_index:
