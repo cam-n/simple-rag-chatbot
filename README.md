@@ -68,7 +68,7 @@ rag-chatbot/
 ├── rag/
 │   ├── Dockerfile
 │   ├── requirements.txt
-│   ├── chatbot.py            # core RAG logic
+│   ├── rag.py            # core RAG logic
 │   └── main.py               # FastAPI wrapper
 └── ui/
     ├── Dockerfile

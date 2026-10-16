@@ -1,4 +1,4 @@
-"""FastAPI wrapper around chatbot.py."""
+"""FastAPI wrapper around rag.py."""
 import json
 import os
 import threading
@@ -8,12 +8,12 @@ from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
-import chatbot
+import rag
 
 
 def _warm():
     try:
-        chatbot.get_vectorstore()
+        rag.get_vectorstore()
         print("Index ready.")
     except Exception as e:
         print(f"Index not ready yet: {e}")
@@ -44,7 +44,7 @@ def chat(req: ChatRequest):
     """Streams NDJSON events: one 'sources' event, then many 'token' events."""
     def gen():
         try:
-            docs = chatbot.retrieve(req.question, req.k, req.threshold)
+            docs = rag.retrieve(req.question, req.k, req.threshold)
             sources = [
                 {
                     "file": os.path.basename(d.metadata.get("source", "unknown")),
@@ -53,7 +53,7 @@ def chat(req: ChatRequest):
                 for d in docs
             ]
             yield json.dumps({"type": "sources", "sources": sources}) + "\n"
-            for token in chatbot.stream_answer(req.question, docs):
+            for token in rag.stream_answer(req.question, docs):
                 yield json.dumps({"type": "token", "text": token}) + "\n"
         except Exception as e:
             yield json.dumps({"type": "error", "message": str(e)}) + "\n"
@@ -64,7 +64,7 @@ def chat(req: ChatRequest):
 @app.post("/reindex")
 def reindex():
     try:
-        chatbot.reindex()
+        rag.reindex()
         return {"status": "reindexed"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
