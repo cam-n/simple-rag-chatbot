@@ -6,6 +6,37 @@ that come **only** from those documents, with the sources shown.
 Everything runs locally in Docker: the LLM runs on [Ollama](https://ollama.com), so no data
 leaves your machine and no API key is needed.
 
+## Local and self-hosted
+
+This project is designed to run entirely on your own hardware, whether that's a laptop or
+your own server.
+
+- **Private:** your documents, questions and answers never leave your machine. There are
+  no cloud APIs and no API keys.
+- **Offline-capable:** after the first run downloads the models, it works without internet access.
+- **Under your control:** you choose the models, the data location and the hardware.
+- **Free to run:** there are no per-token or subscription costs. You only pay for your own hardware.
+
+**Security note for self-hosting:** the UI has no login. By default it is reachable only at
+`http://localhost:8501`, and the `rag` and `ollama` services are not published to the host.
+If you host it on a server that others can reach, put it behind a reverse proxy with
+authentication (for example Caddy or Nginx with basic auth, or Authelia) and HTTPS. Don't
+expose port 8501 directly to the internet.
+
+## Status
+
+This is a **minimal RAG implementation**, meant as a clear starting point rather than a
+production system. It uses plain vector search over `.docx` files, with no reranking and
+no conversation memory.
+
+### Roadmap
+
+- [ ] Evaluation set to measure retrieval and answer quality
+- [ ] Hybrid search (BM25 + vectors) and reranking
+- [ ] Chat memory for follow-up questions
+- [ ] More formats (PDF, Markdown, TXT)
+- [ ] Incremental indexing and file upload in the UI
+
 ## Architecture
 
 ```
