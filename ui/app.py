@@ -6,8 +6,8 @@ import streamlit as st
 
 API_URL = os.getenv("API_URL", "http://rag:8000")
 
-st.set_page_config(page_title="Document Chatbot", page_icon="💬")
-st.title("💬 Document Chatbot")
+st.set_page_config(page_title="DossierChat", page_icon="💬")
+st.title("💬 DossierChat")
 st.caption("Answers come only from your documents.")
 
 with st.sidebar:

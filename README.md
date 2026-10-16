@@ -1,4 +1,6 @@
-# RAG Chatbot
+# DossierChat
+
+> Chat with your documents, privately.
 
 A private, document-based chatbot. Ask questions about your `.docx` files and get answers
 that come **only** from those documents, with the sources shown.
@@ -46,8 +48,8 @@ Browser :8501 → ui (Streamlit) → rag (FastAPI + LangChain + FAISS) → ollam
 | Service  | Image                | Role                                                                 |
 |----------|----------------------|----------------------------------------------------------------------|
 | `ollama` | `ollama/ollama`      | Serves the LLM (`llama3.1:8b`) and embeddings (`nomic-embed-text`)   |
-| `rag`    | `rag-api` (built)    | Loads, chunks and embeds documents; retrieves context; streams answers |
-| `ui`     | `rag-ui` (built)     | Streamlit chat interface                                             |
+| `rag`    | `dossierchat-api` (built)    | Loads, chunks and embeds documents; retrieves context; streams answers |
+| `ui`     | `dossierchat-ui` (built)     | Streamlit chat interface                                             |
 
 **How a question is answered**
 
@@ -59,7 +61,7 @@ Browser :8501 → ui (Streamlit) → rag (FastAPI + LangChain + FAISS) → ollam
 ## Project structure
 
 ```
-rag-chatbot/
+dossierchat/
 ├── docker-compose.yml        # 3 containers, Linux / NVIDIA GPU (optional)
 ├── docker-compose.mac.yml    # 3 containers, macOS (CPU)
 ├── documents/                # put your .docx files here
@@ -68,7 +70,7 @@ rag-chatbot/
 ├── rag/
 │   ├── Dockerfile
 │   ├── requirements.txt
-│   ├── rag.py            # core RAG logic
+│   ├── chatbot.py            # core RAG logic
 │   └── main.py               # FastAPI wrapper
 └── ui/
     ├── Dockerfile

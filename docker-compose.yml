@@ -1,7 +1,8 @@
+name: dossierchat
 services:
   ollama:
     build: ./ollama
-    image: rag-ollama
+    image: dossierchat-ollama
     environment:
       LLM_MODEL: llama3.1:8b
       EMBED_MODEL: nomic-embed-text
@@ -14,6 +15,7 @@ services:
       timeout: 10s
       retries: 60
       start_period: 30s
+    # --- NVIDIA GPU (optional): uncomment ---
     # deploy:
     #   resources:
     #     reservations:
@@ -24,7 +26,7 @@ services:
 
   rag:
     build: ./rag
-    image: rag-api
+    image: dossierchat-api
     environment:
       OLLAMA_BASE_URL: http://ollama:11434
       LLM_MODEL: llama3.1:8b
@@ -45,7 +47,7 @@ services:
 
   ui:
     build: ./ui
-    image: rag-ui
+    image: dossierchat-ui
     environment:
       API_URL: http://rag:8000
     ports:
