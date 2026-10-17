@@ -1,4 +1,4 @@
-# DossierChat
+# SandChat
 
 > Chat with your documents, privately.
 
@@ -48,8 +48,8 @@ Browser :8501 → ui (Streamlit) → rag (FastAPI + LangChain + FAISS) → ollam
 | Service  | Image                | Role                                                                 |
 |----------|----------------------|----------------------------------------------------------------------|
 | `ollama` | `ollama/ollama`      | Serves the LLM (`llama3.1:8b`) and embeddings (`nomic-embed-text`)   |
-| `rag`    | `dossierchat-api` (built)    | Loads, chunks and embeds documents; retrieves context; streams answers |
-| `ui`     | `dossierchat-ui` (built)     | Streamlit chat interface                                             |
+| `rag`    | `sandchat-api` (built)    | Loads, chunks and embeds documents; retrieves context; streams answers |
+| `ui`     | `sandchat-ui` (built)     | Streamlit chat interface                                             |
 
 **How a question is answered**
 
@@ -61,7 +61,7 @@ Browser :8501 → ui (Streamlit) → rag (FastAPI + LangChain + FAISS) → ollam
 ## Project structure
 
 ```
-dossierchat/
+sandchat/
 ├── docker-compose.yml        # 3 containers, Linux / NVIDIA GPU (optional)
 ├── docker-compose.mac.yml    # 3 containers, macOS (CPU)
 ├── documents/                # put your .docx files here

@@ -1,4 +1,4 @@
-name: dossierchat
+name: sandchat
 # Everything in Docker (Mac): ollama (official image) + rag API + UI.
 # NOTE: Docker on macOS cannot use the Apple GPU, so Ollama runs on CPU (slow).
 # Give Docker Desktop >= 8 GB RAM (Settings > Resources).
@@ -29,7 +29,7 @@ services:
 
   rag:
     build: ./rag
-    image: dossierchat-api
+    image: sandchat-api
     environment:
       OLLAMA_BASE_URL: http://ollama:11434
       LLM_MODEL: llama3.1:8b
@@ -50,7 +50,7 @@ services:
 
   ui:
     build: ./ui
-    image: dossierchat-ui
+    image: sandchat-ui
     environment:
       API_URL: http://rag:8000
     ports:
