@@ -1,8 +1,8 @@
-name: dossierchat
+name: sandchat
 services:
   ollama:
     build: ./ollama
-    image: dossierchat-ollama
+    image: sandchat-ollama
     environment:
       LLM_MODEL: llama3.1:8b
       EMBED_MODEL: nomic-embed-text
@@ -26,7 +26,7 @@ services:
 
   rag:
     build: ./rag
-    image: dossierchat-api
+    image: sandchat-api
     environment:
       OLLAMA_BASE_URL: http://ollama:11434
       LLM_MODEL: llama3.1:8b
@@ -47,7 +47,7 @@ services:
 
   ui:
     build: ./ui
-    image: dossierchat-ui
+    image: sandchat-ui
     environment:
       API_URL: http://rag:8000
     ports:
