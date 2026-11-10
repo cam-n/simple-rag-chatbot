@@ -71,6 +71,7 @@ simple-rag-chatbot/
 ├── rag/
 │   ├── Dockerfile
 │   ├── requirements.txt
+│   ├── prompt.json           # the prompt
 │   ├── rag.py                # core RAG logic (index, retrieve, answer)
 │   ├── prompt.json           # prompt template, edit this to change behavior
 │   └── main.py               # FastAPI wrapper
@@ -137,10 +138,11 @@ stored as a list of lines, which `rag.py` joins with newlines:
     "This is a simple RAG chatbot, which is built by Cam Nguyen. Everything runs locally in Docker: the LLM runs on [Ollama](https://ollama.com/), so no data leaves your machine and no API key is needed.",
     "",
     "Rules:",
-    "1) If the user asks about this chatbot itself (who built it, what it is, how it works, where it runs, or about privacy), answer with the 'About this chatbot' text above, and ignore the context.",
-    "2) For all other questions, answer using only the context below.",
-    "3) If the context does not contain the answer, say: \"I don't know based on the provided documents.\"",
-    "4) Be concise, and cite sources as (source: filename) when you use the context.",
+    "1) If the user only greets you or makes small talk (for example: hi, hello, hey, good morning, thanks, bye), reply with a short, friendly message and offer to answer questions about their documents. Do not say \"I don't know\" and do not cite sources.",
+    "2) If the user asks about this chatbot itself (who built it, what it is, how it works, where it runs, or about privacy), answer with the 'About this chatbot' text above, and ignore the context.",
+    "3) For all other questions, answer using only the context below.",
+    "4) If the context does not contain the answer, say: \"I don't know based on the provided documents.\"",
+    "5) Be concise, and cite sources as (source: filename) when you use the context.",
     "",
     "Context:",
     "{context}",
@@ -158,6 +160,29 @@ stored as a list of lines, which `rag.py` joins with newlines:
   `rag` service to edit it live.
 - Stricter prompts keep answers inside your documents. Looser prompts let the model fall back
   on general knowledge, which can mean more hallucination, so label such answers clearly.
+
+## Models
+
+| Model | Role | Size on disk | Context length | Input |
+|-------|------|--------------|----------------|-------|
+| [`llama3.1:8b`](https://ollama.com/library/llama3.1:8b) | Chat / answer generation | 4.9 GB (8.03B parameters, Q4_K_M quantization) | 128K tokens supported by the model; this project uses **8,192** (`num_ctx` in `rag/rag.py`) | Text only |
+| `nomic-embed-text` | Embeddings for retrieval | about 274 MB | **8,192**  | Text only |
+
+Notes:
+[`llama3.1:8b HuggingFace`](https://huggingface.co/meta-llama/Llama-3.1-8B) 
+- **Context length:** `llama3.1:8b` supports up to 128K tokens, but a longer context needs far
+  more memory and is slower on CPU. The project sets 8,192 tokens, which comfortably fits the
+  retrieved chunks (1,200 characters each) plus the prompt and the answer. Raise `num_ctx` only
+  if you need more, and give Docker more RAM when you do.
+- **Input data type:** the model reads plain text. It can't take images, audio or files directly,
+  so your `.docx` files are converted to text during indexing.
+- **Languages:** officially English, German, French, Italian, Portuguese, Hindi, Spanish and
+  Thai. Other languages (such as Japanese or Vietnamese) may work but with lower quality.
+- **Memory:** expect about 6 GB of RAM in use while the model is loaded.
+- **License:** Llama 3.1 is released under the Meta Llama 3.1 Community License, so check its
+  terms before using the model commercially.
+- To check what is installed, run `docker compose -f docker-compose.mac.yml exec ollama ollama show llama3.1:8b`.
+
 
 ## Configuration
 
