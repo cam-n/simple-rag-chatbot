@@ -170,7 +170,9 @@ stored as a list of lines, which `rag.py` joins with newlines:
 
 Notes:
 [`llama3.1:8b HuggingFace`](https://huggingface.co/meta-llama/Llama-3.1-8B) 
-[`llama3.1:8b Blog`]([`llama3.1:8b Blog`](https://huggingface.co/meta-llama/Llama-3.1-8B) 
+
+[`llama3.1:8b Blog`](https://ai.meta.com/blog/meta-llama-3-1/) 
+
 - **Context length:** `llama3.1:8b` supports up to 128K tokens, but a longer context needs far
   more memory and is slower on CPU. The project sets 8,192 tokens, which comfortably fits the
   retrieved chunks (1,200 characters each) plus the prompt and the answer. Raise `num_ctx` only
