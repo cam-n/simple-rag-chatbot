@@ -2,6 +2,8 @@
 import os
 import shutil
 import threading
+import json
+from pathlib import Path
 
 from langchain_community.document_loaders import DirectoryLoader, Docx2txtLoader
 from langchain_community.vectorstores import FAISS
@@ -16,33 +18,24 @@ LLM_MODEL = os.getenv("LLM_MODEL", "llama3.1:8b")
 EMBED_MODEL = os.getenv("EMBED_MODEL", "nomic-embed-text")
 DOCS_PATH = os.getenv("DOCS_PATH", "/data/documents")
 INDEX_PATH = os.getenv("INDEX_PATH", "/data/faiss_index")
+PROMPT_FILE = Path(os.getenv("PROMPT_FILE", Path(__file__).with_name("prompt.json")))
 
-SEPARATORS = [
-    "\n#{1,6} ", "'''\n", "\n\\*\\*\\*+\n", "\n---+\n", "\n___+\n",
-    "\n\n", "\n", " ", "",
-]
-
-TEMPLATE = (
-    "You are a strict, citation-focused assistant for a private knowledge base.\n"
-    "RULES:\n"
-    "1) Use ONLY the provided context to answer.\n"
-    "2) If the answer is not clearly contained in the context, say: "
-    "\"I don't know based on the provided documents.\"\n"
-    "3) Do NOT use outside knowledge, guessing, or web information.\n"
-    "4) If applicable, cite sources as (source: filename).\n\n"
-    "Context:\n{context}\n\n"
-    "Question: {question}"
-)
+SEPARATORS = ["\n\n", "\n", ". ", "! ", "? ", " ", ""]
 
 _embeddings = OllamaEmbeddings(model=EMBED_MODEL, base_url=OLLAMA_BASE_URL)
-_chain = (
-    ChatPromptTemplate.from_template(TEMPLATE)
-    | ChatOllama(model=LLM_MODEL, base_url=OLLAMA_BASE_URL, temperature=0, num_ctx=8192)
-    | StrOutputParser()
-)
+
+_llm = ChatOllama(model=LLM_MODEL, base_url=OLLAMA_BASE_URL, temperature=0.1, num_ctx=8192)
 
 _vectorstore = None
 _lock = threading.Lock()
+
+def load_prompt() -> ChatPromptTemplate:
+    with open(PROMPT_FILE, encoding="utf-8") as f:
+        template = "\n".join(json.load(f)["template"])
+    for placeholder in ("{context}", "{question}"):
+        if placeholder not in template:
+            raise ValueError(f"{PROMPT_FILE} must contain {placeholder}")
+    return ChatPromptTemplate.from_template(template)
 
 
 def _build_index():
@@ -57,7 +50,7 @@ def _build_index():
         add_start_index=True,
         strip_whitespace=True,
         separators=SEPARATORS,
-        is_separator_regex=True,
+        is_separator_regex=False,
     )
     splits = splitter.split_documents(docs)
 
@@ -76,7 +69,7 @@ def get_vectorstore():
             if os.path.exists(os.path.join(INDEX_PATH, "index.faiss")):
                 _vectorstore = FAISS.load_local(
                     INDEX_PATH, _embeddings,
-                    allow_dangerous_deserialization=True,  # our own index
+                    allow_dangerous_deserialization=True, 
                     distance_strategy=DistanceStrategy.COSINE, normalize_L2=True,
                 )
             else:
@@ -92,7 +85,7 @@ def reindex():
         _vectorstore = _build_index()
 
 
-def retrieve(question: str, k: int = 5, threshold: float = 0.2):
+def retrieve(question: str, k: int = 3, threshold: float = 0.15):
     retriever = get_vectorstore().as_retriever(
         search_type="similarity_score_threshold",
         search_kwargs={"k": k, "score_threshold": threshold},
@@ -108,4 +101,5 @@ def format_docs(docs) -> str:
 
 
 def stream_answer(question: str, docs):
-    yield from _chain.stream({"context": format_docs(docs), "question": question})
+    chain = load_prompt() | _llm | StrOutputParser()
+    yield from chain.stream({"context": format_docs(docs), "question": question})

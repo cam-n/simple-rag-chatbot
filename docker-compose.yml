@@ -1,8 +1,8 @@
-name: sandchat
+name: simple-rag-chatbot
 services:
   ollama:
     build: ./ollama
-    image: sandchat-ollama
+    image: simple-rag-chatbot-ollama
     environment:
       LLM_MODEL: llama3.1:8b
       EMBED_MODEL: nomic-embed-text
@@ -26,7 +26,7 @@ services:
 
   rag:
     build: ./rag
-    image: sandchat-api
+    image: simple-rag-chatbot-api
     environment:
       OLLAMA_BASE_URL: http://ollama:11434
       LLM_MODEL: llama3.1:8b
@@ -47,7 +47,7 @@ services:
 
   ui:
     build: ./ui
-    image: sandchat-ui
+    image: simple-rag-chatbot-ui
     environment:
       API_URL: http://rag:8000
     ports:
