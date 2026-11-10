@@ -9,6 +9,12 @@ documents is controlled by an editable prompt file (see [Customizing the prompt]
 Everything runs locally in Docker: the LLM runs on [Ollama](https://ollama.com), so no data
 leaves your machine and no API key is needed.
 
+## Demo
+
+![Building RAG Module Docker Image:](docs/RAG-Module-Docker-Image-Build.gif)
+
+![Simple Chat](docs/Simple-RAG-Chatbot-Demo.gif)
+
 ## Local and self-hosted
 
 This project is designed to run entirely on your own hardware, whether that's a laptop or
