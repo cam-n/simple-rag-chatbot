@@ -11,8 +11,10 @@ leaves your machine and no API key is needed.
 
 ## Demo
 
-![Building RAG Module Docker Image:](docs/RAG-Module-Docker-Image-Build.gif)
+- **Building RAG Module Docker Image:**
+![Building RAG Module Docker Image](docs/RAG-Module-Docker-Image-Build.gif)
 
+- **Simple Chat:**
 ![Simple Chat](docs/Simple-RAG-Chatbot-Demo.gif)
 
 ## Local and self-hosted
