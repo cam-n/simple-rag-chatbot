@@ -35,7 +35,7 @@ services:
       INDEX_PATH: /data/faiss_index
     volumes:
       - ./documents:/data/documents:ro
-      - rag_index:/data/faiss_index
+      - ./rag_index:/data/faiss_index
     depends_on:
       ollama:
         condition: service_healthy
