@@ -182,7 +182,7 @@ Notes:
 [`llama3.1:8b Blog`](https://ai.meta.com/blog/meta-llama-3-1/) 
 
 - **Context length:** `llama3.1:8b` supports up to 128K tokens, but a longer context needs far
-  more memory and is slower on CPU. The project sets 8,192 tokens, which comfortably fits the
+  more memory and is slower on CPU. The project sets 4,096 tokens as the default, which comfortably fits the
   retrieved chunks (1,200 characters each) plus the prompt and the answer. Raise `num_ctx` only
   if you need more, and give Docker more RAM when you do.
 - **Input data type:** the model reads plain text. It can't take images, audio or files directly,
