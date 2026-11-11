@@ -173,7 +173,7 @@ stored as a list of lines, which `rag.py` joins with newlines:
 
 | Model | Role | Size on disk | Context length | Input |
 |-------|------|--------------|----------------|-------|
-| [`llama3.1:8b`](https://ollama.com/library/llama3.1:8b) | Chat / answer generation | 4.9 GB (8.03B parameters, Q4_K_M quantization) | 128K tokens supported by the model; this project uses **8,192** (`num_ctx` in `rag/rag.py`) | Text only |
+| [`llama3.1:8b`](https://ollama.com/library/llama3.1:8b) | Chat / answer generation | 4.9 GB (8.03B parameters, Q4_K_M quantization) | 128K tokens supported by the model; this project uses **4,096** (`num_ctx` as the default in `rag/rag.py`). You can adjust the context length by setting OLLAMA_CONTEXT_LENGTH in the docker-compose file. | Text only |
 | `nomic-embed-text` | Embeddings for retrieval | about 274 MB | **8,192**  | Text only |
 
 Notes:

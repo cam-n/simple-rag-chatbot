@@ -11,11 +11,12 @@ services:
     environment:
       LLM_MODEL: llama3.1:8b
       EMBED_MODEL: nomic-embed-text
+      # OLLAMA_CONTEXT_LENGTH: 8192
     # Start the server, then pull both models on first run
     entrypoint: ["/bin/bash", "/entrypoint.sh"]
     volumes:
       - ./ollama/entrypoint.sh:/entrypoint.sh:ro
-      - ollama_data:/root/.ollama
+      - ./ollama_data:/root/.ollama
     # Uncomment to reach Ollama from your Mac (stop the native app first, port clash):
     # ports:
     #   - "11434:11434"
