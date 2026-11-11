@@ -6,6 +6,8 @@ services:
     environment:
       LLM_MODEL: llama3.1:8b
       EMBED_MODEL: nomic-embed-text
+      # OLLAMA_CONTEXT_LENGTH: 8192
+
     volumes:
       - ollama_data:/root/.ollama
     healthcheck:
