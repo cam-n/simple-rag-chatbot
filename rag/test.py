@@ -5,7 +5,7 @@ from langchain_community.document_loaders import UnstructuredExcelLoader
 sys.setrecursionlimit(10**6)
 
 # Create UnstructuredExcelLoader
-loader = UnstructuredExcelLoader("./documents/更新用) JEMS Customer List (1).xlsx", mode="elements")
+loader = UnstructuredExcelLoader("./documents/testing_file", mode="elements")
 
 # Load the document
 docs = loader.load()
